@@ -11,9 +11,10 @@ const mapStateToProps = state => {
   const attachmentsSize = readyAttachmentsSize + pendingAttachmentsSize;
   const isOverLimit = attachmentsSize > state.getIn(['server', 'server', 'configuration', 'statuses', 'max_media_attachments'])-1;
   const hasVideoOrAudio = state.getIn(['compose', 'media_attachments']).some(m => ['video', 'audio'].includes(m.get('type')));
+  const hasQuote = !!state.compose.get('quoted_status_id');
 
   return {
-    disabled: isUploading || isOverLimit || hasVideoOrAudio,
+    disabled: isUploading || isOverLimit || hasVideoOrAudio || hasQuote,
     resetFileKey: state.getIn(['compose', 'resetFileKey']),
   };
 };
@@ -31,9 +32,9 @@ const mapDispatchToProps = dispatch => ({
     }));
   },
 
-  onEmbedTenor() {
+  onEmbedGif() {
     dispatch(openModal({
-      modalType: 'TENOR',
+      modalType: 'GIF',
       modalProps: { noEsc: true },
     }));
   },

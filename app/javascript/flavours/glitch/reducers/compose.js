@@ -1,6 +1,11 @@
 import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet, fromJS } from 'immutable';
 
-import { changeUploadCompose } from 'flavours/glitch/actions/compose_typed';
+import {
+  changeUploadCompose,
+  quoteCompose,
+  quoteComposeCancel,
+  setComposeQuotePolicy,
+} from 'flavours/glitch/actions/compose_typed';
 import { timelineDelete } from 'flavours/glitch/actions/timelines_typed';
 
 import {
@@ -40,7 +45,10 @@ import {
   COMPOSE_CONTENT_TYPE_CHANGE,
   COMPOSE_EMOJI_INSERT,
   COMPOSE_DOODLE_SET,
-  COMPOSE_TENOR_SET,
+  COMPOSE_GIF_RESET,
+  COMPOSE_GIF_SEARCH_REQUEST,
+  COMPOSE_GIF_SEARCH_SUCCESS,
+  COMPOSE_GIF_SEARCH_FAIL,
   COMPOSE_RESET,
   COMPOSE_POLL_ADD,
   COMPOSE_POLL_REMOVE,
@@ -80,6 +88,7 @@ const initialState = ImmutableMap({
   is_submitting: false,
   is_changing_upload: false,
   is_uploading: false,
+  should_redirect_to_compose_page: false,
   progress: 0,
   isUploadingThumbnail: false,
   thumbnailProgress: 0,
@@ -98,7 +107,11 @@ const initialState = ImmutableMap({
   resetFileKey: Math.floor((Math.random() * 0x10000)),
   idempotencyKey: null,
   tagHistory: ImmutableList(),
-  tenor: null,
+  gifs: ImmutableMap({
+    provider: '',
+    items: ImmutableOrderedSet(),
+    isLoading: false,
+  }),
   doodle: ImmutableMap({
     fg: 'rgb(  0,    0,    0)',
     bg: 'rgb(255,  255,  255)',
@@ -110,6 +123,11 @@ const initialState = ImmutableMap({
     adaptiveStroke: true,
     smoothing: false,
   }),
+
+  // Quotes
+  quoted_status_id: null,
+  quote_policy: 'public',
+  default_quote_policy: 'public', // Set in hydration.
 });
 
 const initialPoll = ImmutableMap({
@@ -167,8 +185,11 @@ function clearAll(state) {
     map.set('sensitive', state.get('default_sensitive'));
     map.set('language', state.get('default_language'));
     map.update('media_attachments', list => list.clear());
+    map.set('progress', 0);
     map.set('poll', null);
     map.set('idempotencyKey', uuid());
+    map.set('quoted_status_id', null);
+    map.set('quote_policy', state.get('default_quote_policy'));
   });
 }
 
@@ -211,6 +232,7 @@ function appendMedia(state, media, file) {
     map.update('media_attachments', list => list.push(media.set('unattached', true)));
     map.set('is_uploading', false);
     map.set('is_processing', false);
+    map.set('progress', 0);
     map.set('resetFileKey', Math.floor((Math.random() * 0x10000)));
     map.set('idempotencyKey', uuid());
     map.update('pending_media_attachments', n => n - 1);
@@ -288,6 +310,14 @@ const insertEmoji = (state, position, emojiData, needsSpace) => {
     caretPosition: position + emoji.length + 1,
     idempotencyKey: uuid(),
   });
+};
+
+const normalizeList = (state, path, gifs, provider) => {
+  return state.setIn(path, ImmutableMap({
+    provider,
+    items: ImmutableOrderedSet(gifs),
+    isLoading: false,
+  }));
 };
 
 const hydrate = (state, hydratedState) => {
@@ -374,6 +404,8 @@ const updatePoll = (state, index, value, maxOptions) => state.updateIn(['poll', 
   return tmp;
 });
 
+const calculateProgress = (loaded, total) => Math.min(Math.round((loaded / total) * 100), 100);
+
 /** @type {import('@reduxjs/toolkit').Reducer<typeof initialState>} */
 export const composeReducer = (state = initialState, action) => {
   if (changeUploadCompose.fulfilled.match(action)) {
@@ -390,17 +422,38 @@ export const composeReducer = (state = initialState, action) => {
     return state.set('is_changing_upload', true);
   } else if (changeUploadCompose.rejected.match(action)) {
     return state.set('is_changing_upload', false);
+  } else if (quoteCompose.match(action)) {
+    const status = action.payload;
+    return state
+      .set('quoted_status_id', status.get('id'))
+      .set('spoiler', status.get('sensitive'))
+      .set('spoiler_text', status.get('spoiler_text'))
+      .update('privacy', (visibility) => ['public', 'unlisted'].includes(visibility) && status.get('visibility') === 'private' ? 'private' : visibility);
+  } else if (quoteComposeCancel.match(action)) {
+    return state.set('quoted_status_id', null);
+  } else if (setComposeQuotePolicy.match(action)) {
+    return state.set('quote_policy', action.payload);
   }
 
   switch(action.type) {
   case STORE_HYDRATE:
     return hydrate(state, action.state.get('compose'));
   case COMPOSE_MOUNT:
-    return state.set('mounted', state.get('mounted') + 1);
+    return state
+      .set('mounted', state.get('mounted') + 1)
+      .set('should_redirect_to_compose_page', false);
   case COMPOSE_UNMOUNT:
     return state
       .set('mounted', Math.max(state.get('mounted') - 1, 0))
-      .set('is_composing', false);
+      .set('is_composing', false)
+      .set(
+        'should_redirect_to_compose_page',
+        (state.get('mounted') === 1 &&
+          state.get('is_composing') === true &&
+          (state.get('text').trim() !== '' ||
+          state.get('media_attachments').size > 0)
+        )
+      );
   case COMPOSE_ADVANCED_OPTIONS_CHANGE:
     return state
       .set('advanced_options', state.get('advanced_options').set(action.option, !!overwrite(!state.getIn(['advanced_options', action.option]), action.value)))
@@ -508,15 +561,19 @@ export const composeReducer = (state = initialState, action) => {
   case COMPOSE_UPLOAD_SUCCESS:
     return appendMedia(state, fromJS(action.media), action.file);
   case COMPOSE_UPLOAD_FAIL:
-    return state.set('is_uploading', false).set('is_processing', false).update('pending_media_attachments', n => n - 1);
+    return state
+      .set('is_uploading', false)
+      .set('is_processing', false)
+      .set('progress', 0)
+      .update('pending_media_attachments', n => n - 1);
   case COMPOSE_UPLOAD_UNDO:
     return removeMedia(state, action.media_id);
   case COMPOSE_UPLOAD_PROGRESS:
-    return state.set('progress', Math.round((action.loaded / action.total) * 100));
+    return state.set('progress', calculateProgress(action.loaded, action.total));
   case THUMBNAIL_UPLOAD_REQUEST:
     return state.set('isUploadingThumbnail', true);
   case THUMBNAIL_UPLOAD_PROGRESS:
-    return state.set('thumbnailProgress', Math.round((action.loaded / action.total) * 100));
+    return state.set('thumbnailProgress', calculateProgress(action.loaded, action.total));
   case THUMBNAIL_UPLOAD_FAIL:
     return state.set('isUploadingThumbnail', false);
   case THUMBNAIL_UPLOAD_SUCCESS:
@@ -568,8 +625,14 @@ export const composeReducer = (state = initialState, action) => {
     return insertEmoji(state, action.position, action.emoji, action.needsSpace);
   case COMPOSE_DOODLE_SET:
     return state.mergeIn(['doodle'], action.options);
-  case COMPOSE_TENOR_SET:
-    return state.mergeIn(['tenor'], action.options);
+  case COMPOSE_GIF_RESET:
+    return state.setIn(['gifs', 'items'], ImmutableOrderedSet());
+  case COMPOSE_GIF_SEARCH_REQUEST:
+    return state.setIn(['gifs', 'isLoading'], true);
+  case COMPOSE_GIF_SEARCH_SUCCESS:
+    return normalizeList(state, ['gifs'], action.results, action.provider);
+  case COMPOSE_GIF_SEARCH_FAIL:
+    return state.setIn(['gifs', 'isLoading'], false);
   case REDRAFT: {
     const do_not_federate = !!action.status.get('local_only');
     let text = action.raw_text || unescapeHTML(expandMentions(action.status));
@@ -590,6 +653,9 @@ export const composeReducer = (state = initialState, action) => {
         map => map.merge(new ImmutableMap({ do_not_federate })),
       );
       map.set('id', null);
+      map.set('quoted_status_id', action.status.getIn(['quote', 'quoted_status']));
+      // Mastodon-authored posts can be expected to have at most one automatic approval policy
+      map.set('quote_policy', action.status.getIn(['quote_approval', 'automatic', 0]) || 'nobody');
 
       if (action.status.get('spoiler_text').length > 0) {
         map.set('spoiler', true);
@@ -604,10 +670,15 @@ export const composeReducer = (state = initialState, action) => {
       }
 
       if (action.status.get('poll')) {
+        let options = ImmutableList(action.status.get('poll').options.map(x => x.title));
+        if (options.size < action.maxOptions) {
+          options = options.push('');
+        }
+
         map.set('poll', ImmutableMap({
-          options: action.status.getIn(['poll', 'options']).map(x => x.get('title')),
-          multiple: action.status.getIn(['poll', 'multiple']),
-          expires_in: expiresInFromExpiresAt(action.status.getIn(['poll', 'expires_at'])),
+          options: options,
+          multiple: action.status.get('poll').multiple,
+          expires_in: expiresInFromExpiresAt(action.status.get('poll').expires_at),
         }));
       }
     });
@@ -625,6 +696,9 @@ export const composeReducer = (state = initialState, action) => {
       map.set('idempotencyKey', uuid());
       map.set('sensitive', action.status.get('sensitive'));
       map.set('language', action.status.get('language'));
+      map.set('quoted_status_id', action.status.getIn(['quote', 'quoted_status']));
+      // Mastodon-authored posts can be expected to have at most one automatic approval policy
+      map.set('quote_policy', action.status.getIn(['quote_approval', 'automatic', 0]) || 'nobody');
 
       if (action.spoiler_text.length > 0) {
         map.set('spoiler', true);
@@ -635,10 +709,15 @@ export const composeReducer = (state = initialState, action) => {
       }
 
       if (action.status.get('poll')) {
+        let options = ImmutableList(action.status.get('poll').options.map(x => x.title));
+        if (options.size < action.maxOptions) {
+          options = options.push('');
+        }
+
         map.set('poll', ImmutableMap({
-          options: action.status.getIn(['poll', 'options']).map(x => x.get('title')),
-          multiple: action.status.getIn(['poll', 'multiple']),
-          expires_in: expiresInFromExpiresAt(action.status.getIn(['poll', 'expires_at'])),
+          options: options,
+          multiple: action.status.get('poll').multiple,
+          expires_in: expiresInFromExpiresAt(action.status.get('poll').expires_at),
         }));
       }
     });

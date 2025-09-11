@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 
 import Base from 'flavours/glitch/components/modal_root';
 import { AltTextModal } from 'flavours/glitch/features/alt_text_modal';
+import { GIFModal } from 'flavours/glitch/features/gif_modal';
 import {
   MuteModal,
   BlockModal,
@@ -21,11 +22,10 @@ import {
   IgnoreNotificationsModal,
   AnnualReportModal,
 } from 'flavours/glitch/features/ui/util/async-components';
-import { getScrollbarWidth } from 'flavours/glitch/utils/scrollbar';
 
 import BundleContainer from '../containers/bundle_container';
 
-import ActionsModal from './actions_modal';
+import { ActionsModal } from './actions_modal';
 import AudioModal from './audio_modal';
 import { BoostModal } from './boost_modal';
 import {
@@ -39,15 +39,17 @@ import {
   ConfirmLogOutModal,
   ConfirmFollowToListModal,
   ConfirmMissingAltTextModal,
+  ConfirmRevokeQuoteModal,
+  QuietPostQuoteInfoModal,
 } from './confirmation_modals';
 import DeprecatedSettingsModal from './deprecated_settings_modal';
 import DoodleModal from './doodle_modal';
 import { FavouriteModal } from './favourite_modal';
-import GIFModal from './gif_modal';
-import ImageModal from './image_modal';
+import { ImageModal } from './image_modal';
 import MediaModal from './media_modal';
 import { ModalPlaceholder } from './modal_placeholder';
 import VideoModal from './video_modal';
+import { VisibilityModal } from './visibility_modal';
 
 export const MODAL_COMPONENTS = {
   'MEDIA': () => Promise.resolve({ default: MediaModal }),
@@ -57,7 +59,7 @@ export const MODAL_COMPONENTS = {
   'BOOST': () => Promise.resolve({ default: BoostModal }),
   'FAVOURITE': () => Promise.resolve({ default: FavouriteModal }),
   'DOODLE': () => Promise.resolve({ default: DoodleModal }),
-  'TENOR': () => Promise.resolve({ default: GIFModal }),
+  'GIF': () => Promise.resolve({ default: GIFModal }),
   'CONFIRM': () => Promise.resolve({ default: ConfirmationModal }),
   'CONFIRM_DELETE_STATUS': () => Promise.resolve({ default: ConfirmDeleteStatusModal }),
   'CONFIRM_DELETE_LIST': () => Promise.resolve({ default: ConfirmDeleteListModal }),
@@ -68,6 +70,8 @@ export const MODAL_COMPONENTS = {
   'CONFIRM_LOG_OUT': () => Promise.resolve({ default: ConfirmLogOutModal }),
   'CONFIRM_FOLLOW_TO_LIST': () => Promise.resolve({ default: ConfirmFollowToListModal }),
   'CONFIRM_MISSING_ALT_TEXT': () => Promise.resolve({ default: ConfirmMissingAltTextModal }),
+  'CONFIRM_REVOKE_QUOTE': () => Promise.resolve({ default: ConfirmRevokeQuoteModal }),
+  'CONFIRM_QUIET_QUOTE': () => Promise.resolve({ default: QuietPostQuoteInfoModal }),
   'MUTE': MuteModal,
   'BLOCK': BlockModal,
   'DOMAIN_BLOCK': DomainBlockModal,
@@ -85,6 +89,7 @@ export const MODAL_COMPONENTS = {
   'CLOSED_REGISTRATIONS': ClosedRegistrationsModal,
   'IGNORE_NOTIFICATIONS': IgnoreNotificationsModal,
   'ANNUAL_REPORT': AnnualReportModal,
+  'COMPOSE_PRIVACY': () => Promise.resolve({ default: VisibilityModal }),
 };
 
 export default class ModalRoot extends PureComponent {
@@ -99,16 +104,6 @@ export default class ModalRoot extends PureComponent {
   state = {
     backgroundColor: null,
   };
-
-  componentDidUpdate () {
-    if (this.props.type) {
-      document.body.classList.add('with-modals--active');
-      document.documentElement.style.marginRight = `${getScrollbarWidth()}px`;
-    } else {
-      document.body.classList.remove('with-modals--active');
-      document.documentElement.style.marginRight = '0';
-    }
-  }
 
   setBackgroundColor = color => {
     this.setState({ backgroundColor: color });

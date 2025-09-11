@@ -4,6 +4,7 @@ require 'singleton'
 
 class ActivityPub::TagManager
   include Singleton
+  include JsonLdHelper
   include RoutingHelper
 
   CONTEXT = 'https://www.w3.org/ns/activitystreams'
@@ -17,7 +18,7 @@ class ActivityPub::TagManager
   end
 
   def url_for(target)
-    return target.url if target.respond_to?(:local?) && !target.local?
+    return unsupported_uri_scheme?(target.url) ? nil : target.url if target.respond_to?(:local?) && !target.local?
 
     return unless target.respond_to?(:object_type)
 
@@ -39,6 +40,8 @@ class ActivityPub::TagManager
     case target.object_type
     when :person
       target.instance_actor? ? instance_actor_url : account_url(target)
+    when :conversation
+      context_url(target) unless target.parent_account_id.nil? || target.parent_status_id.nil?
     when :note, :comment, :activity
       return activity_account_status_url(target.account, target) if target.reblog?
 
@@ -48,6 +51,13 @@ class ActivityPub::TagManager
     when :flag
       target.uri
     end
+  end
+
+  def approval_uri_for(quote, check_approval: true)
+    return quote.approval_uri unless quote.quoted_account&.local?
+    return if check_approval && !quote.accepted?
+
+    account_quote_authorization_url(quote.quoted_account, quote)
   end
 
   def key_uri_for(target)
@@ -66,6 +76,12 @@ class ActivityPub::TagManager
     raise ArgumentError, 'target must be a local activity' unless %i(note comment activity).include?(target.object_type) && target.local?
 
     activity_account_status_url(target.account, target)
+  end
+
+  def context_uri_for(target, page_params = nil)
+    raise ArgumentError, 'target must be a local activity' unless %i(note comment activity).include?(target.object_type) && target.local?
+
+    items_context_url(target.conversation, page_params)
   end
 
   def replies_uri_for(target, page_params = nil)
@@ -203,6 +219,19 @@ class ActivityPub::TagManager
     path_params[param]
   end
 
+  def uris_to_local_accounts(uris)
+    usernames = []
+    ids = []
+
+    uris.each do |uri|
+      param, value = uri_to_local_account_params(uri)
+      usernames << value.downcase if param == :username
+      ids << value if param == :id
+    end
+
+    Account.local.with_username(usernames).or(Account.local.where(id: ids))
+  end
+
   def uri_to_actor(uri)
     uri_to_resource(uri, Account)
   end
@@ -213,7 +242,7 @@ class ActivityPub::TagManager
     if local_uri?(uri)
       case klass.name
       when 'Account'
-        klass.find_local(uri_to_local_id(uri, :username))
+        uris_to_local_accounts([uri]).first
       else
         StatusFinder.new(uri).status
       end
@@ -224,5 +253,21 @@ class ActivityPub::TagManager
     end
   rescue ActiveRecord::RecordNotFound
     nil
+  end
+
+  private
+
+  def uri_to_local_account_params(uri)
+    return unless local_uri?(uri)
+
+    path_params = Rails.application.routes.recognize_path(uri)
+
+    # TODO: handle numeric IDs
+    case path_params[:controller]
+    when 'accounts'
+      [:username, path_params[:username]]
+    when 'instance_actors'
+      [:id, -99]
+    end
   end
 end

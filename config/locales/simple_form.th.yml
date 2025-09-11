@@ -210,7 +210,6 @@ th:
         setting_auto_play_gif: เล่น GIF แบบเคลื่อนไหวโดยอัตโนมัติ
         setting_boost_modal: แสดงกล่องโต้ตอบการยืนยันก่อนดัน
         setting_default_language: ภาษาของการโพสต์
-        setting_default_privacy: ความเป็นส่วนตัวของการโพสต์
         setting_default_sensitive: ทำเครื่องหมายสื่อว่าละเอียดอ่อนเสมอ
         setting_delete_modal: แสดงกล่องโต้ตอบการยืนยันก่อนลบโพสต์
         setting_disable_hover_cards: ปิดใช้งานตัวอย่างโปรไฟล์เมื่อวางเมาส์เหนือ
@@ -324,6 +323,9 @@ th:
       terms_of_service_generator:
         domain: โดเมน
       user:
+        date_of_birth_1i: วัน
+        date_of_birth_2i: เดือน
+        date_of_birth_3i: ปี
         role: บทบาท
         time_zone: โซนเวลา
       user_role:

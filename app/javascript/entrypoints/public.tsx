@@ -1,7 +1,5 @@
 import { createRoot } from 'react-dom/client';
 
-import './public-path';
-
 import { IntlMessageFormat } from 'intl-messageformat';
 import type { MessageDescriptor, PrimitiveType } from 'react-intl';
 import { defineMessages } from 'react-intl';
@@ -10,7 +8,6 @@ import Rails from '@rails/ujs';
 import axios from 'axios';
 import { throttle } from 'lodash';
 
-import { start } from '../mastodon/common';
 import { timeAgoString } from '../mastodon/components/relative_timestamp';
 import emojify from '../mastodon/features/emoji/emoji';
 import loadKeyboardExtensions from '../mastodon/load_keyboard_extensions';
@@ -19,8 +16,6 @@ import { loadPolyfills } from '../mastodon/polyfills';
 import ready from '../mastodon/ready';
 
 import 'cocoon-js-vanilla';
-
-start();
 
 const messages = defineMessages({
   usernameTaken: {
@@ -68,7 +63,7 @@ function loaded() {
 
     if (id) message = localeData[id];
 
-    if (!message) message = defaultMessage as string;
+    message ??= defaultMessage as string;
 
     const messageFormat = new IntlMessageFormat(message, locale);
     return messageFormat.format(values) as string;
@@ -150,12 +145,14 @@ function loaded() {
       );
     });
 
+  updateDefaultQuotePrivacyFromPrivacy(
+    document.querySelector('#user_settings_attributes_default_privacy'),
+  );
+
   const reactComponents = document.querySelectorAll('[data-component]');
 
   if (reactComponents.length > 0) {
-    import(
-      /* webpackChunkName: "containers/media_container" */ '../mastodon/containers/media_container'
-    )
+    import('../mastodon/containers/media_container')
       .then(({ default: MediaContainer }) => {
         reactComponents.forEach((component) => {
           Array.from(component.children).forEach((child) => {
@@ -368,6 +365,34 @@ Rails.delegate(
       .forEach((input) => {
         setInputDisabled(input, !target.checked);
       });
+  },
+);
+
+const updateDefaultQuotePrivacyFromPrivacy = (
+  privacySelect: EventTarget | null,
+) => {
+  if (!(privacySelect instanceof HTMLSelectElement) || !privacySelect.form)
+    return;
+
+  const select = privacySelect.form.querySelector<HTMLSelectElement>(
+    'select#user_settings_attributes_default_quote_policy',
+  );
+  if (!select) return;
+
+  if (privacySelect.value === 'private') {
+    select.value = 'nobody';
+    setInputDisabled(select, true);
+  } else {
+    setInputDisabled(select, false);
+  }
+};
+
+Rails.delegate(
+  document,
+  '#user_settings_attributes_default_privacy',
+  'change',
+  ({ target }) => {
+    updateDefaultQuotePrivacyFromPrivacy(target);
   },
 );
 
