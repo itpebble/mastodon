@@ -22,7 +22,7 @@ module ThemeHelper
 
     # TODO: get rid of that when we retire the themes and perform the settings migration
     theme = 'default' if %w(mastodon-light contrast system).include?(theme)
-    theme = 'modern' if %w(modern-light modern-contrast modern-dark system-modern).include?(theme)
+    theme = 'modern-dark' if %w(modern-light modern-contrast system-modern).include?(theme)
 
     vite_stylesheet_tag "skins/#{flavour}/#{theme}", type: :virtual, media: 'all', crossorigin: 'anonymous'
   end

@@ -1,5 +1,5 @@
 en:
   skins:
     glitch:
-      modern: Mastodon Modern (default)
+      modern-dark: Mastodon Modern (default)
       system-modern: Mastodon Modern (Automatic, use system theme)
