@@ -46,6 +46,12 @@ export function DirectTimeline() {
   return import('../../direct_timeline');
 }
 
+export function Collections () {
+  return import('../../collections').then(
+    module => ({default: module.Collections})
+  );
+}
+
 export function Status () {
   return import('../../status');
 }
