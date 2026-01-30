@@ -17,8 +17,8 @@ import { Button } from 'flavours/glitch/components/button';
 import { Column } from 'flavours/glitch/components/column';
 import { ColumnHeader } from 'flavours/glitch/components/column_header';
 import {
+  CheckboxField,
   TextAreaField,
-  ToggleField,
 } from 'flavours/glitch/components/form_fields';
 import { TextInputField } from 'flavours/glitch/components/form_fields/text_input_field';
 import { LoadingIndicator } from 'flavours/glitch/components/loading_indicator';
@@ -197,7 +197,7 @@ const CollectionSettings: React.FC<{
       </div>
 
       <div className='fields-group'>
-        <ToggleField
+        <CheckboxField
           label={
             <FormattedMessage
               id='collections.mark_as_sensitive'

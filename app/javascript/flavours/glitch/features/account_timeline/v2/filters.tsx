@@ -7,7 +7,7 @@ import { useParams } from 'react-router';
 
 import Overlay from 'react-overlays/esm/Overlay';
 
-import { PlainToggleField } from '@/flavours/glitch/components/form_fields/toggle_field';
+import { Toggle } from '@/flavours/glitch/components/form_fields';
 import { Icon } from '@/flavours/glitch/components/icon';
 import KeyboardArrowDownIcon from '@/material-icons/400-24px/keyboard_arrow_down.svg?react';
 
@@ -119,7 +119,7 @@ const FilterDropdown: FC = () => {
                 defaultMessage='Show replies'
               />
             </label>
-            <PlainToggleField
+            <Toggle
               name='replies'
               checked={replies}
               onChange={handleChange}
@@ -132,7 +132,7 @@ const FilterDropdown: FC = () => {
                 defaultMessage='Show boosts'
               />
             </label>
-            <PlainToggleField
+            <Toggle
               name='boosts'
               checked={boosts}
               onChange={handleChange}
