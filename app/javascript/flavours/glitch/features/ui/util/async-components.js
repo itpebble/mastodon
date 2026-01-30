@@ -54,6 +54,12 @@ export function Collections () {
   );
 }
 
+export function CollectionsEditor () {
+  return import('../../collections/editor').then(
+    module => ({default: module.CollectionEditorPage})
+  );
+}
+
 export function Status () {
   return import('../../status');
 }
