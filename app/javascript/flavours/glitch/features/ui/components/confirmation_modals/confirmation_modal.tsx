@@ -19,13 +19,17 @@ const messages = defineMessages({
 export const ConfirmationModal: React.FC<
   {
     title: React.ReactNode;
-    message: React.ReactNode;
+    message?: React.ReactNode;
     confirm: React.ReactNode;
     cancel?: React.ReactNode;
     secondary?: React.ReactNode;
     onSecondary?: () => void;
     onConfirm: () => void;
     closeWhenConfirm?: boolean;
+    extraContent?: React.ReactNode;
+    updating?: boolean;
+    disabled?: boolean;
+    noFocusButton?: boolean;
   } & BaseConfirmationModalProps
 > = ({
   title,
@@ -37,6 +41,10 @@ export const ConfirmationModal: React.FC<
   secondary,
   onSecondary,
   closeWhenConfirm = true,
+  extraContent,
+  updating,
+  disabled,
+  noFocusButton = false,
 }) => {
   const handleClick = useCallback(() => {
     if (closeWhenConfirm) {
@@ -56,13 +64,15 @@ export const ConfirmationModal: React.FC<
       <div className='safety-action-modal__top'>
         <div className='safety-action-modal__confirmation'>
           <h1>{title}</h1>
-          <p>{message}</p>
+          {message && <p>{message}</p>}
+
+          {extraContent}
         </div>
       </div>
 
       <div className='safety-action-modal__bottom'>
         <div className='safety-action-modal__actions'>
-          <button onClick={onClose} className='link-button'>
+          <button onClick={onClose} className='link-button' type='button'>
             {cancel ?? (
               <FormattedMessage
                 id='confirmation_modal.cancel'
@@ -74,16 +84,27 @@ export const ConfirmationModal: React.FC<
           {secondary && (
             <>
               <div className='spacer' />
-              <button onClick={handleSecondary} className='link-button'>
+              <button
+                onClick={handleSecondary}
+                className='link-button'
+                type='button'
+                disabled={disabled}
+              >
                 {secondary}
               </button>
             </>
           )}
 
-          {/* eslint-disable-next-line jsx-a11y/no-autofocus -- we are in a modal and thus autofocusing is justified */}
-          <Button onClick={handleClick} autoFocus>
+          {/* eslint-disable jsx-a11y/no-autofocus -- we are in a modal and thus autofocusing is justified */}
+          <Button
+            onClick={handleClick}
+            loading={updating}
+            disabled={disabled}
+            autoFocus={!noFocusButton}
+          >
             {confirm}
           </Button>
+          {/* eslint-enable */}
         </div>
       </div>
     </div>

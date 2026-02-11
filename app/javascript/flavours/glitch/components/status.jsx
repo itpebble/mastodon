@@ -7,7 +7,6 @@ import classNames from 'classnames';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
-import CancelFillIcon from '@/material-icons/400-24px/cancel-fill.svg?react';
 import { Hotkeys } from 'flavours/glitch/components/hotkeys';
 import { ContentWarning } from 'flavours/glitch/components/content_warning';
 import { PictureInPicturePlaceholder } from 'flavours/glitch/components/picture_in_picture_placeholder';
@@ -24,22 +23,24 @@ import { SensitiveMediaContext } from '../features/ui/util/sensitive_media_conte
 import { displayMedia, visibleReactions } from '../initial_state';
 
 import AttachmentList from './attachment_list';
-import { Avatar } from './avatar';
-import { AvatarOverlay } from './avatar_overlay';
-import { DisplayName } from './display_name';
+import { StatusHeader } from './status/header'
 import { getHashtagBarForStatus } from './hashtag_bar';
 import { MentionsPlaceholder } from './mentions_placeholder';
-import { Permalink } from './permalink';
 import StatusActionBar from './status_action_bar';
 import StatusContent from './status_content';
 import StatusIcons from './status_icons';
 import StatusPrepend from './status_prepend';
 import { StatusReactions } from './status_reactions';
-import { IconButton } from './icon_button';
 
 const domParser = new DOMParser();
 
-export const textForScreenReader = (intl, status, rebloggedByText = false, expanded = false) => {
+const messages = defineMessages({
+  quote_noun: { id: 'status.quote_noun', defaultMessage: 'Quote', description: 'Quote as a noun' },
+  contains_quote: { id: 'status.contains_quote', defaultMessage: 'Contains quote' },
+  quote_cancel: { id: 'status.quote.cancel', defaultMessage: 'Cancel quote' },
+});
+
+export const textForScreenReader = ({intl, status, rebloggedByText = false, isQuote = false, expanded = false}) => {
   const displayName = status.getIn(['account', 'display_name']);
 
   const spoilerText = status.getIn(['translation', 'spoiler_text']) || status.get('spoiler_text');
@@ -47,15 +48,14 @@ export const textForScreenReader = (intl, status, rebloggedByText = false, expan
   const contentText = domParser.parseFromString(contentHtml, 'text/html').documentElement.textContent;
 
   const values = [
+    isQuote ? intl.formatMessage(messages.quote_noun) : undefined,
     displayName.length === 0 ? status.getIn(['account', 'acct']).split('@')[0] : displayName,
     spoilerText && !expanded ? spoilerText : contentText,
+    !!status.get('quote') ? intl.formatMessage(messages.contains_quote) : undefined,
     intl.formatDate(status.get('created_at'), { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }),
     status.getIn(['account', 'acct']),
-  ];
-
-  if (rebloggedByText) {
-    values.push(rebloggedByText);
-  }
+    rebloggedByText,
+  ].filter(val => !!val);
 
   return values.join(', ');
 };
@@ -75,10 +75,6 @@ export const defaultMediaVisibility = (status, settings) => {
 
   return !status.get('matched_media_filters') && (displayMedia !== 'hide_all' && !status.get('sensitive') || displayMedia === 'show_all');
 };
-
-const messages = defineMessages({
-  quote_cancel: { id: 'status.quote.cancel', defaultMessage: 'Cancel quote' },
-});
 
 class Status extends ImmutablePureComponent {
 
@@ -116,13 +112,14 @@ class Status extends ImmutablePureComponent {
     onToggleCollapsed: PropTypes.func,
     onTranslate: PropTypes.func,
     onInteractionModal: PropTypes.func,
-    onQuoteCancel: PropTypes.func,
     muted: PropTypes.bool,
     hidden: PropTypes.bool,
     unread: PropTypes.bool,
+    showActions: PropTypes.bool,
     prepend: PropTypes.string,
     withDismiss: PropTypes.bool,
     isQuotedPost: PropTypes.bool,
+    shouldHighlightOnMount: PropTypes.bool,
     getScrollPosition: PropTypes.func,
     updateScrollBottom: PropTypes.func,
     expanded: PropTypes.bool,
@@ -133,6 +130,8 @@ class Status extends ImmutablePureComponent {
     skipPrepend: PropTypes.bool,
     avatarSize: PropTypes.number,
     deployPictureInPicture: PropTypes.func,
+    unfocusable: PropTypes.bool,
+    headerRenderFn: PropTypes.func,
     settings: ImmutablePropTypes.map.isRequired,
     pictureInPicture: ImmutablePropTypes.contains({
       inUse: PropTypes.bool,
@@ -163,6 +162,7 @@ class Status extends ImmutablePureComponent {
     'expanded',
     'unread',
     'pictureInPicture',
+    'headerRenderFn',
     'previousId',
     'nextInReplyToId',
     'rootId',
@@ -344,10 +344,6 @@ class Status extends ImmutablePureComponent {
     deployPictureInPicture(status, type, mediaProps);
   };
 
-  handleQuoteCancel = () => {
-    this.props.onQuoteCancel?.();
-  }
-
   handleHotkeyReply = e => {
     e.preventDefault();
     this.props.onReply(this.props.status);
@@ -457,27 +453,40 @@ class Status extends ImmutablePureComponent {
   }
 
   render () {
-    const { intl, hidden, featured, unfocusable, unread, pictureInPicture, previousId, nextInReplyToId, rootId, skipPrepend, avatarSize = 46, children } = this.props;
+    const {
+      intl,
+      hidden,
+      featured,
+      unfocusable,
+      unread,
+      showActions = true,
+      isQuotedPost = false,
+      pictureInPicture,
+      previousId,
+      nextInReplyToId,
+      rootId,
+      skipPrepend,
+      avatarSize = 46,
+      children,
+    } = this.props;
 
+    // glitch-soc-specific
     const {
       status,
       account,
       settings,
       muted,
-      intersectionObserverWrapper,
       onOpenVideo,
       onOpenMedia,
       notification,
       history,
       identity,
-      isQuotedPost,
       ...other
     } = this.props;
     let attachments = null;
 
     let media = [];
     let mediaIcons = [];
-    let statusAvatar;
 
     if (status === null) {
       return null;
@@ -639,7 +648,7 @@ class Status extends ImmutablePureComponent {
     } else if (status.get('card') && settings.get('inline_preview_cards') && !this.props.muted && !status.get('quote')) {
       media.push(
         <Card
-          onOpenMedia={this.handleOpenMedia}
+          key={`${status.get('id')}-${status.get('edited_at')}`}
           card={status.get('card')}
           sensitive={status.get('sensitive')}
         />,
@@ -681,13 +690,24 @@ class Status extends ImmutablePureComponent {
       rebloggedByText = intl.formatMessage({ id: 'status.reblogged_by', defaultMessage: '{name} boosted' }, { name: account.get('acct') });
     }
 
-    if (account === undefined || account === null) {
-      statusAvatar = <Avatar account={status.get('account')} size={avatarSize} />;
-    } else {
-      statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
-    }
-
     const {statusContentProps, hashtagBar} = getHashtagBarForStatus(status);
+
+    const header = this.props.headerRenderFn
+      ? this.props.headerRenderFn({ status, account, avatarSize, messages, onHeaderClick: this.handleHeaderClick, statusProps: this.props })
+      : (
+        <StatusHeader
+          status={status}
+          account={account}
+          avatarSize={avatarSize}
+          onHeaderClick={this.handleHeaderClick}
+        >
+          <StatusIcons
+            status={status}
+            mediaIcons={mediaIcons}
+            settings={settings.get('status_icons')}
+          />
+        </StatusHeader>
+      );
 
     return (
       <Hotkeys handlers={handlers} focusable={!unfocusable}>
@@ -696,7 +716,7 @@ class Status extends ImmutablePureComponent {
           {...selectorAttribs}
           tabIndex={unfocusable ? null : 0}
           data-featured={featured ? 'true' : null}
-          aria-label={textForScreenReader(intl, status, rebloggedByText, !status.get('hidden'))}
+          aria-label={textForScreenReader({intl, status, rebloggedByText, isQuote: isQuotedPost, expanded: !status.get('hidden')})}
           ref={this.handleRef}
           data-nosnippet={status.getIn(['account', 'noindex'], true) || undefined}
         >
@@ -712,42 +732,16 @@ class Status extends ImmutablePureComponent {
                 muted: this.props.muted,
                 'status--is-quote': isQuotedPost,
                 'status--has-quote': !!status.get('quote'),
+                'status--highlighted-entry': this.props.shouldHighlightOnMount,
               })
             }
             data-id={status.get('id')}
           >
             {(connectReply || connectUp || connectToRoot) && <div className={classNames('status__line', { 'status__line--full': connectReply, 'status__line--first': !status.get('in_reply_to_id') && !connectToRoot })} />}
 
-            {(!muted) && (
-              <header onClick={this.handleHeaderClick} onAuxClick={this.handleHeaderClick} className='status__info'>
-                <Permalink href={status.getIn(['account', 'url'])} to={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} data-hover-card-account={status.getIn(['account', 'id'])} className='status__display-name'>
-                  <div className='status__avatar'>
-                    {statusAvatar}
-                  </div>
+            {(!muted) && header}
 
-                  <DisplayName account={status.get('account')} />
-                </Permalink>
-
-
-                {isQuotedPost && !!this.props.onQuoteCancel ? (
-                  <IconButton
-                    onClick={this.handleQuoteCancel}
-                    className='status__quote-cancel'
-                    title={intl.formatMessage(messages.quote_cancel)}
-                    icon="cancel-fill"
-                    iconComponent={CancelFillIcon}
-                  />
-                ) : (
-                  <StatusIcons
-                    status={status}
-                    mediaIcons={mediaIcons}
-                    settings={settings.get('status_icons')}
-                  />
-                )}
-              </header>
-            )}
-
-            {status.get('spoiler_text').length > 0 && <ContentWarning text={status.getIn(['translation', 'spoilerHtml']) || status.get('spoilerHtml')} expanded={expanded} onClick={this.handleExpandedToggle} icons={mediaIcons} />}
+            <ContentWarning status={status} expanded={expanded} onClick={this.handleExpandedToggle} icons={mediaIcons} />
 
             {expanded && (
               <>
@@ -758,8 +752,6 @@ class Status extends ImmutablePureComponent {
                   collapsible
                   media={media}
                   onCollapsedToggle={this.handleCollapsedToggle}
-                  tagLinks={settings.get('tag_misleading_links')}
-                  rewriteMentions={settings.get('rewrite_mentions')}
                   {...statusContentProps}
                 />
 
@@ -782,7 +774,7 @@ class Status extends ImmutablePureComponent {
               canReact={this.props.identity.signedIn}
             />
 
-            {!isQuotedPost &&
+            {(showActions && !isQuotedPost) &&
               <StatusActionBar
                 status={status}
                 account={status.get('account')}

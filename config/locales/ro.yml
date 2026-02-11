@@ -11,7 +11,6 @@ ro:
       few: Urmăritori
       one: Urmăritor
       other: De Urmăritori
-    following: Urmăriți
     instance_actor_flash: Acest cont este un actor virtual folosit pentru a reprezenta serverul în sine și nu un utilizator individual. Acesta este utilizat în scopuri federative şi nu trebuie suspendat.
     last_active: ultima activitate
     link_verified_on: Proprietatea acestui link a fost verificată la %{date}
@@ -685,9 +684,6 @@ ro:
       limit: Deja ai fixat numărul maxim de postări
       ownership: Postarea altcuiva nu poate fi fixată
       reblog: Un impuls nu poate fi fixat
-    visibilities:
-      private: Doar urmăritorii
-      private_long: Arată doar urmăritorilor
   stream_entries:
     sensitive_content: Conținut sensibil
   tags:
