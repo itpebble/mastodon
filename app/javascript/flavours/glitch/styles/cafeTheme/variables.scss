@@ -1,6 +1,7 @@
+
 // Commonly used web colors
-$black: #000000; // Black
-$white: #ffffff; // White
+$black: #000; // Black
+$white: #fff; // White
 $red-600: #b7253d !default; // Deep Carmine
 $red-500: #df405a !default; // Cerise
 $blurple-600: #cc6738; // Iris
@@ -18,9 +19,9 @@ $gold-star: #ca8f04 !default; // Dark Goldenrod
 $red-bookmark: $warning-red;
 
 // Values from the classic Mastodon UI
-$classic-base-color: hsl(7, 16%, 19%);
-$classic-primary-color: hsl(7, 29%, 70%);
-$classic-secondary-color: hsl(23, 25%, 88%);
+$classic-base-color: hsl(7deg, 16%, 19%);
+$classic-primary-color: hsl(7deg, 29%, 70%);
+$classic-secondary-color: hsl(23deg, 25%, 88%);
 $classic-highlight-color: $blurple-500;
 
 // Variables for defaults in UI
@@ -36,9 +37,15 @@ $ui-base-color: $classic-base-color !default; // Darkest
 $ui-base-lighter-color: lighten(
   $ui-base-color,
   26%
-) !default; // Lighter darkest
-$ui-primary-color: $classic-primary-color !default; // Lighter
-$ui-secondary-color: $classic-secondary-color !default; // Lightest
+) !default; 
+
+// Lighter darkest
+$ui-primary-color: $classic-primary-color !default; 
+
+// Lighter
+$ui-secondary-color: $classic-secondary-color !default; 
+
+// Lightest
 $ui-highlight-color: $classic-highlight-color !default;
 $ui-button-color: $white !default;
 $ui-button-background-color: $blurple-500 !default;
@@ -60,7 +67,7 @@ $ui-button-destructive-background-color: $red-500 !default;
 $ui-button-destructive-focus-background-color: $red-600 !default;
 
 $ui-button-icon-focus-outline: $ui-button-focus-outline !default;
-$ui-button-icon-hover-background-color: rgba(255, 149, 138, 0.4) !default;
+$ui-button-icon-hover-background-color: rgba(255, 149, 138, 40%) !default;
 
 // Variables for texts
 $primary-text-color: $white !default;
@@ -117,8 +124,8 @@ $dismiss-overlay-width: 4rem;
   --surface-variant-active-background-color: #{lighten($ui-base-color, 4%)};
   --on-surface-color: #{transparentize($ui-base-color, 0.5)};
   --avatar-border-radius: 8px;
-  --hover-color: rgba(170, 170, 170, 0.07) !important;
-  --elevated-color: rgba(200, 157, 151, 0.1) !important;
+  --hover-color: rgba(170, 170, 170, 7%) !important;
+  --elevated-color: rgba(200, 157, 151, 10%) !important;
   --elevated-tint: rgba(199, 199, 240, 0.07) !important;
   --border-color: rgba(200, 130, 121, 0.2) !important;
   --border-color-2: #787878;
