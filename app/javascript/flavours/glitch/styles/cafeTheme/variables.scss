@@ -29,6 +29,7 @@
 
 	--color-bg-primary: var(--color-cafe-500);
 	--color-bg-elevated: var(--color-cafe-600);
+  --background-color-tint: var(--color-bg-tertiary); // Annoyingly, this token is not fully deprecated yet: it is still used on the about page
 	--color-bg-inverted: var(--color-cafe-200);
 	--color-bg-media-base: var(--color-grey-950);
 	--color-bg-media-strength: 75%;
