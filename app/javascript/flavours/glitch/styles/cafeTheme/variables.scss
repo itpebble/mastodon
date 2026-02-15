@@ -1,19 +1,19 @@
 :root {
-	--color-grey-950: #090722;
+  --color-grey-950: #090722;
 	--color-grey-600: #5b4f4d;
 	--color-grey-500: #99746d;
 	--color-grey-400: #aa9691;
 	--color-grey-100: #f3dcd8;
-	
-	--color-red-600: #b7253d;
+
+  --color-red-600: #b7253d;
 	--color-red-500: #df405a;
 	--color-red-400: #d06868;
-	
-	--color-yellow-700: #ca8f04;
+
+  --color-yellow-700: #ca8f04;
 	--color-yellow-400: #ffc90e;
-	
-	--color-green-400: #79bd9a;
-	
+
+  --color-green-400: #79bd9a;
+  
 	--color-indigo-600: #cc6738;
 	--color-indigo-500: #ff7361;
 	--color-indigo-400: #ff7361;
@@ -26,19 +26,19 @@
 	--color-cafe-500: #211918;
 	--color-cafe-300: #c9a19c;
 	--color-cafe-200: #e8dfd9;
-
+  
 	--color-bg-primary: var(--color-cafe-500);
 	--color-bg-elevated: var(--color-cafe-600);
   --background-color-tint: var(--color-bg-tertiary); // Annoyingly, this token is not fully deprecated yet: it is still used on the about page
 	--color-bg-inverted: var(--color-cafe-200);
 	--color-bg-media-base: var(--color-grey-950);
 	--color-bg-media-strength: 75%;
-	
+  
 	--color-text-primary: var(--color-indigo-50);
 	--color-text-secondary: var(--color-cafe-300);
 	--color-text-tertiary: var(--color-cafe-200);
 	--color-text-on-inverted: var(--color-grey-950);
-	
+  
 	--border-color: rgba(200, 130, 121, .2);
 	--elevated-color: rgba(200, 157, 151, .1);
 	--elevated-tint: rgba(200, 199, 240, .07);
@@ -54,10 +54,4 @@
 	
 	--shadow-strength-primary: 10%;
 	--color-shadow-primary: rgb(from var(--color-grey-950) r g b/var(--shadow-strength-primary));
-}
-
-/* The hashtag bar color doesn't use color variables for whatever reason */
-.hashtag-bar a,
-.hashtag-bar button {
-  color: var(--color-red-400) !important;
 }
