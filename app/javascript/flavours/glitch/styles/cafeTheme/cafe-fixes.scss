@@ -1,6 +1,6 @@
-/*
+/****************************************************************
     ABOUT PAGE FIXES
-*/
+****************************************************************/
 
 // Padding is set to 0 by default and it looks ugly
 .about__section__body {
@@ -14,19 +14,18 @@
   border: 1px solid var(--color-border-primary);
 }
 
-/*
-    OVERRIDES TO HIDE NUMBERS
-*/
+/****************************************************************
+    HIDE NUMBERS OVERRIDES
+****************************************************************/
 
 // Hide number of followers and following on profile
 .account__action-bar__tab strong {
   display: none !important;
 }
 
-
-/* 
-    REPLACE "POST" BUTTON WITH "WAWA"
-*/
+/****************************************************************
+    REPLACE "Post" with "wawa"
+****************************************************************/
 
 .compose-form__actions .button::before {
   content: "wawa" !important;
@@ -40,7 +39,7 @@
   color: rgba(255,255,255,0) !important; 
 }
 
-/* This sets the secondary post button back to normal so it doesn't just say "wawa" too */
+// This sets the secondary post button back to normal so it doesn't just say "wawa" too
 .compose-form__actions .secondary-post-button::before {
   content: "" !important;
   position: absolute !important;
@@ -53,10 +52,9 @@
   color: rgba(255,255,255,1) !important; 
 }
 
-
-/* 
-    REPLACE "FAVORITE" ICON WITH A PAW SHAPE
-*/
+/****************************************************************
+    REPLACE "FAVORITE" ICON WITH A PAW
+****************************************************************/
 
 .icon-button.star-icon > svg.icon-star {
   display: none !important;
@@ -64,11 +62,11 @@
 .notification-group--favourite > .notification-group__icon > svg.icon-star {
   display: none !important;
 }
-/* Color for the icon! (not mandatory, but pink is fun :3) */
+// Color for the icon! (not mandatory, but pink is fun :3)
 .icon-button.star-icon.active {
   color: rgb(255, 139, 124) !important;
 }
-/* Copy the default animations, since they apply to the SVG element we just removed */
+// Copy the default animations, since they apply to the SVG element we just removed
 .no-reduce-motion .icon-button.star-icon.deactivate::before {
   animation: spring-rotate-out 1s linear;
   transform-origin: 50% 52% !important;
@@ -77,15 +75,15 @@
   animation: spring-rotate-in 1s linear;
   transform-origin: 50% 52% !important;
 }
-/* If you see a visual artifact during animations, try this workaround */    
+// If you see a visual artifact during animations, try this workaround
 .no-reduce-motion .icon-button.star-icon::before {
   filter: blur(0.5px) !important;
 }
-/* The icon is applied as a mask, so it can inherit a dynamic background color */
+// The icon is applied as a mask, so it can inherit a dynamic background color
 .icon-button.star-icon::before {
   display: inline-block !important;
   content: '' !important;
-  /* The icon size may need to be 20x20 on some instances? See below */
+  // The icon size may need to be 20x20 on some instances? See below
   width: 24px !important;
   height: 24px !important;
   left: 0 !important; 
@@ -96,31 +94,32 @@
   mask-size: 100% !important;
   mask-image: url('data:image/svg+xml,%3Csvg%20height%3D%2220%22%20viewBox%3D%220%20-960%20960%20960%22%20width%3D%2220%22%20class%3D%22icon%20icon-star%22%20aria-hidden%3D%22true%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M365-843c-31%203-53%2026-66%2052-12%2025-17%2056-14%2088%202%2028%205%2057%2020%2084%208%2014%2019%2027%2036%2034%2016%208%2034%209%2053%205%2032-8%2059-28%2071-55s11-53%2011-83c-1-31-6-61-24-87a95%2095%200%200%200-87-38m225%2011c-30%201-57%2019-70%2042-14%2024-18%2051-20%2080-1%2026-3%2052%208%2078%2010%2026%2039%2046%2071%2050%2032%205%2064-12%2079-36s20-51%2021-79c2-29%202-57-9-83s-41-50-74-52a75%2075%200%200%200-6%200m-218%2059c16-2%2018%201%2024%208s10%2026%2011%2048c0%2028-2%2046-5%2054-15%2018-31%2015-37%209-5-8-9-30-12-55-2-21%202-40%208-51s10-13%2011-13m223%2010c5%200%209%205%2011%2011%204%208%206%2027%205%2050-2%2023-7%2040-11%2046-8%2015-25%209-29-3-2-5-3-22-2-47%202-23%206-41%2011-48%204-8%2010-10%2015-9m191%2053c-24%200-47%2012-63%2029-17%2019-28%2043-35%2070-6%2022-9%2047-3%2072%205%2025%2021%2051%2049%2064%2029%2013%2064%202%2082-17%2019-19%2030-43%2039-68%209-28%2011-57%204-85s-27-59-62-65h-11m-595%2021c-6-1-13-1-20%201-30%207-47%2031-56%2056-9%2024-11%2053-5%2082%206%2026%2016%2050%2035%2068s49%2027%2076%2019c27-7%2049-31%2056-56s4-49-1-74c-6-28-18-52-35-70a83%2083%200%200%200-50-26m594%2053c4%202%206%205%207%208%203%2012%202%2031-2%2045-7%2019-16%2035-22%2041-10%207-14-4-16-12-2-9-1-24%203-39%205-19%2012-33%2019-40%204-5%208-5%2011-3m-599%2021c2-1%204%200%206%201%206%207%2013%2020%2017%2036%204%2018%203%2033%201%2040-4%2012-16%207-18%205-5-4-11-16-15-32-3-15-1-31%203-42%201-6%203-8%206-8m309%2058c-21%201-42%205-62%2013-49%2018-71%2058-94%2077-14%2012-32%2018-54%2027s-50%2020-71%2047c-24%2029-34%2063-32%2094s15%2057%2029%2079c28%2045%2079%2069%20129%2067%2046-2%2078-24%20100-39s34-24%2054-22c21%201%2042%2013%2068%2028s60%2034%20102%2032a140%20140%200%200%200%20125-189c-11-25-29-46-50-64-32-27-75-45-94-59-8-7-15-16-25-30-9-13-23-31-46-43-25-13-52-19-79-18m6%2084c14%200%2028%204%2042%2011%208%204%2014%2010%2022%2021%209%2011%2020%2027%2039%2041%2032%2023%2074%2040%2091%2054%2060%2051%2018%20120-34%20122-20%200-39-8-65-22s-57-33-98-35c-43-3-74%2017-96%2032-23%2015-38%2025-64%2025-27%201-57-13-69-32-28-52-4-89%2041-110%2020-8%2047-16%2073-36%2035-28%2052-55%2074-63%2016-6%2031-9%2044-8%22%2F%3E%3C%2Fsvg%3E') !important;
 }
-/* And a filled-in version for when you have ~~favorited~~ pawed a post :3 */
+// And a filled-in version for when you have ~~favorited~~ pawed a post :3
 .icon-button.star-icon.active::before, .notification-group--favourite > .notification-group__icon::before {
   mask-image: url('data:image/svg+xml,%3Csvg%20height%3D%2220%22%20viewBox%3D%220%20-960%20960%20960%22%20width%3D%2220%22%20class%3D%22icon%20icon-star%22%20aria-hidden%3D%22true%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M365-843c-31%203-53%2026-66%2052-12%2025-17%2056-14%2088%202%2028%205%2057%2020%2084%208%2014%2019%2027%2036%2034a100%20100%200%200%200%20124-50c11-27%2011-53%2011-83-1-31-6-61-24-87a95%2095%200%200%200-87-38zm225%2011c-30%201-57%2019-70%2042-14%2024-18%2051-20%2080-1%2026-3%2052%208%2078%2010%2026%2039%2046%2071%2050%2032%205%2064-12%2079-36s20-51%2021-79c2-29%202-57-9-83a87%2087%200%200%200-80-52zm196%20122c-24%200-47%2012-63%2029-17%2019-28%2043-35%2070-6%2022-9%2047-3%2072%205%2025%2021%2051%2049%2064%2029%2013%2064%202%2082-17%2019-19%2030-43%2039-68%209-28%2011-57%204-85s-27-59-62-65h-11zm-595%2021c-6-1-13-1-20%201-30%207-47%2031-56%2056-9%2024-11%2053-5%2082%206%2026%2016%2050%2035%2068s49%2027%2076%2019c27-7%2049-31%2056-56%207-24%204-49-1-74-6-28-18-52-35-70a83%2083%200%200%200-50-26zm304%20132c-21%201-42%205-62%2013-49%2018-71%2058-94%2077-14%2012-32%2018-54%2027s-50%2020-71%2047c-24%2029-34%2063-32%2094%202%2030%2015%2057%2029%2079%2028%2045%2079%2069%20129%2067%2046-2%2078-24%20100-39%2023-16%2034-24%2054-22%2021%201%2042%2012%2068%2028%2027%2015%2060%2034%20102%2032a140%20140%200%200%200%20125-189c-11-25-29-46-50-64-32-27-75-45-94-59-8-7-15-16-25-30-9-13-23-31-46-43-25-13-52-19-79-18z%22%2F%3E%3C%2Fsvg%3E') !important;
 }
-/* Replace the star icon in the new notifications view, too */
+// Replace the star icon in the new notifications view, too
 .notification-group--favourite > .notification-group__icon::before {
   display: inline-block !important;
   content: '' !important;
-  /* 28x28 may not be the right size...? */
+  // 28x28 may not be the right size...?
   width: 28px !important;
   height: 28px !important;
   background-color: rgb(255, 139, 124) !important;
   mask-size: 100% !important;
 }
 
+/****************************************************************
+    MISC./UNSORTED
+****************************************************************/
 
-/*
-    MISC/UNSORTED FIXES
-*/
-
-.status__action-bar__button-wrapper, .status__action-bar .icon-button, .status__action-bar > .emoji-picker-dropdown {
+.status__action-bar__button-wrapper, 
+.status__action-bar .icon-button, 
+.status__action-bar > .emoji-picker-dropdown {
   height: 37.33333px !important;
 }
 
-/* The hashtag bar color doesn't use color variables for whatever reason */
+// The hashtag bar color doesn't use color variables for whatever reason, so override it here
 .hashtag-bar a,
 .hashtag-bar button {
   color: var(--color-red-400) !important;
