@@ -15,3 +15,8 @@
   border-radius: var(--radius);
   border: 1px solid var(--color-border-primary);
 }
+
+/* Hide number of followers and following on profile */
+.account__action-bar__tab strong {
+  display: none !important;
+}
