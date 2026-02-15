@@ -1,0 +1,17 @@
+/* The hashtag bar color doesn't use color variables for whatever reason */
+.hashtag-bar a,
+.hashtag-bar button {
+  color: var(--color-red-400) !important;
+}
+
+/* Padding is set to 0 by default and it looks ugly */
+.about__section__body {
+  padding: 2%;
+}
+
+/* This prevents the about section title boxes from shifting around when you expand them */
+.about__section.active .about__section__title {
+  margin-inline: unset;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border-primary);
+}
