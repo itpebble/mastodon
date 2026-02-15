@@ -33,6 +33,11 @@
   display: none !important;
 }
 
+// Hide number of reactions (does not hide the icons, just the number)
+.reactions-bar__item__count {
+  display: none !important;
+}
+
 /****************************************************************
     REPLACE "Post" with "wawa"
 ****************************************************************/
