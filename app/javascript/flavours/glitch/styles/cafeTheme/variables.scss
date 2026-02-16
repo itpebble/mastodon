@@ -19,7 +19,6 @@
 	--color-indigo-400: #ff7361;
 	--color-indigo-300: #fd8072;
 	--color-indigo-200: #fa8c85;
-	--color-indigo-100: #e0e3ff;
 	--color-indigo-50: #f0f1ff;
 
 	--color-cafe-600: #171212;
@@ -27,17 +26,17 @@
 	--color-cafe-300: #c9a19c;
 	--color-cafe-200: #e8dfd9;
   
-	--color-bg-primary: var(--color-cafe-500);
-	--color-bg-elevated: var(--color-cafe-600);
+	--color-bg-primary: #211918; // var(--color-cafe-500);
+	--color-bg-elevated: #171212; // var(--color-cafe-600);
   --background-color-tint: var(--color-bg-tertiary); // Annoyingly, this token is not fully deprecated yet: it is still used on the about page
-	--color-bg-inverted: var(--color-cafe-200);
-	--color-bg-media-base: var(--color-grey-950);
+	--color-bg-inverted: #e8dfd9; // var(--color-cafe-200);
+	--color-bg-media-base: #090722; // var(--color-grey-950);
 	--color-bg-media-strength: 75%;
   
-	--color-text-primary: var(--color-indigo-50);
-	--color-text-secondary: var(--color-cafe-300);
-	--color-text-tertiary: var(--color-cafe-200);
-	--color-text-on-inverted: var(--color-grey-950);
+	--color-text-primary: #f0f1ff; // var(--color-indigo-50);
+	--color-text-secondary: #c9a19c; // var(--color-cafe-300);
+	--color-text-tertiary: #e8dfd9; // var(--color-cafe-200);
+	--color-text-on-inverted: #090722; // var(--color-grey-950);
   
 	--border-color: rgba(200, 130, 121, .2);
 	--elevated-color: rgba(200, 157, 151, .1);
@@ -46,9 +45,9 @@
 	
 	--overlay-strength-success: 10%;
 	
-	--rich-text-container-color: #e171001a;
-	--rich-text-text-color: #ff9326;
-	--rich-text-decorations-color: var(--color-yellow-600);
+	--rich-text-container-color: rgba(204, 103, 56, 0.1); // var(--color-bg-brand-softer);
+	--rich-text-text-color: #cc6738; // var(--color-bg-brand-base);
+	--rich-text-decorations-color: rgb(177, 96, 47); // var(--color-bg-brand-base-hover);
 	
 	--color-text-bookmark-highlight: #ff5050;
 	
