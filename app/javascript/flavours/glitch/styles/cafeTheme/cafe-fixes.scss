@@ -147,3 +147,10 @@
   }
 }
 */
+/*
+// Change the colour of the "real" link that's displayed in square brackets
+// next to a link that's embedded in text
+.status__content a.unhandled-link .link_origin-tag {
+  color: var(--color-cafe-300) !important;
+}
+*/
