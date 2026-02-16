@@ -1,0 +1,23 @@
+/****************************************************************
+    CSS OVERRIDES FOR HIDING NUMBERS    
+****************************************************************/
+
+// Hide numbers on posts on the timeline
+.status__action-bar .icon-button .icon-button__counter {
+  display: none !important;
+}
+
+// Hide number of followers and following on profile
+.account__action-bar__tab strong {
+  display: none !important;
+}
+
+// Hide number of followers and following on account card
+.account-card__counters {
+  opacity: 0 !important;
+}
+
+// Hide number of likes and favorites in expanded statuses
+.detailed-status__reblogs, .detailed-status__favorites, detailed-status__reactions {
+  display: none !important;
+}
