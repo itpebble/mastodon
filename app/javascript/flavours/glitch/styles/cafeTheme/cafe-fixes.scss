@@ -17,7 +17,7 @@
 /****************************************************************
     HIDE NUMBERS OVERRIDES
 ****************************************************************/
-
+/*
 // Hide number of followers and following on profile
 .account__action-bar__tab strong {
   display: none !important;
@@ -37,11 +37,11 @@
 .reactions-bar__item__count {
   display: none !important;
 }
-
+*/
 /****************************************************************
     REPLACE "Post" with "wawa"
 ****************************************************************/
-
+/*
 .compose-form__actions .button::before {
   content: "wawa" !important;
   position: absolute !important;
@@ -66,11 +66,11 @@
 .compose-form__actions .secondary-post-button { 
   color: rgba(255,255,255,1) !important; 
 }
-
+*/
 /****************************************************************
     REPLACE "FAVORITE" ICON WITH A PAW
 ****************************************************************/
-
+/*
 .icon-button.star-icon > svg.icon-star {
   display: none !important;
 }
@@ -123,26 +123,27 @@
   background-color: rgb(255, 139, 124) !important;
   mask-size: 100% !important;
 }
-
+*/
 /****************************************************************
     MISC./UNSORTED
 ****************************************************************/
-
+/*
 .status__action-bar__button-wrapper, 
 .status__action-bar .icon-button, 
 .status__action-bar > .emoji-picker-dropdown {
   height: 37.33333px !important;
 }
-
+*/
 // The hashtag bar color doesn't use color variables for whatever reason, so override it here
 .hashtag-bar a,
 .hashtag-bar button {
   color: var(--color-indigo-400) !important;
 }
-
+/*
 // Make buttons on images bigger
 @media screen and (max-width: 889px) {
   .media-gallery__actions__pill, .media-gallery__alt__label {
     padding: 15px;
   }
 }
+*/
