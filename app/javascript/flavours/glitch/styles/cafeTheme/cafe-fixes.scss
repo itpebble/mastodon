@@ -4,14 +4,14 @@
 
 // Padding is set to 0 by default and it looks ugly
 .about__section__body {
-  padding: 2%;
+  padding: 2% !important;
 }
 
 // This prevents the about section title boxes from shifting around when you expand them
 .about__section.active .about__section__title {
-  margin-inline: unset;
-  border-radius: var(--radius);
-  border: 1px solid var(--color-border-primary);
+  margin-inline: unset !important;
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--color-border-primary) !important;
 }
 
 /****************************************************************
