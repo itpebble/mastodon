@@ -2,11 +2,6 @@
     CSS OVERRIDES FOR HIDING NUMBERS    
 ****************************************************************/
 
-// Hide numbers on posts on the timeline
-.status__action-bar .icon-button .icon-button__counter {
-  display: none !important;
-}
-
 // Hide number of followers and following on profile
 .account__action-bar__tab strong {
   display: none !important;
