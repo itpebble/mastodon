@@ -21,15 +21,16 @@ import { initMuteModal } from 'flavours/glitch/actions/mutes';
 import { apiFollowAccount } from 'flavours/glitch/api/accounts';
 import { Avatar } from 'flavours/glitch/components/avatar';
 import { AvatarOverlay } from 'flavours/glitch/components/avatar_overlay';
+import { VerifiedBadge } from 'flavours/glitch/components/badge';
 import { Button } from 'flavours/glitch/components/button';
 import { FollowersCounter } from 'flavours/glitch/components/counters';
 import { DisplayName } from 'flavours/glitch/components/display_name';
 import { Dropdown } from 'flavours/glitch/components/dropdown_menu';
+import { AnimateEmojiProvider } from 'flavours/glitch/components/emoji/context';
 import { FollowButton } from 'flavours/glitch/components/follow_button';
 import { RelativeTimestamp } from 'flavours/glitch/components/relative_timestamp';
 import { ShortNumber } from 'flavours/glitch/components/short_number';
 import { Skeleton } from 'flavours/glitch/components/skeleton';
-import { VerifiedBadge } from 'flavours/glitch/components/verified_badge';
 import { useIdentity } from 'flavours/glitch/identity_context';
 import { me } from 'flavours/glitch/initial_state';
 import type { MenuItem } from 'flavours/glitch/models/dropdown_menu';
@@ -77,6 +78,10 @@ interface AccountProps {
   defaultAction?: 'block' | 'mute';
   withBio?: boolean;
   withMenu?: boolean;
+  withBorder?: boolean;
+  extraAccountInfo?: React.ReactNode;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export const Account: React.FC<AccountProps> = ({
@@ -88,6 +93,10 @@ export const Account: React.FC<AccountProps> = ({
   defaultAction,
   withBio,
   withMenu = true,
+  withBorder = true,
+  extraAccountInfo,
+  className,
+  children,
 }) => {
   const intl = useIntl();
   const { signedIn } = useIdentity();
@@ -274,7 +283,7 @@ export const Account: React.FC<AccountProps> = ({
   if (account?.mute_expires_at) {
     muteTimeRemaining = (
       <>
-        · <RelativeTimestamp timestamp={account.mute_expires_at} futureDate />
+        · <RelativeTimestamp hasFuture timestamp={account.mute_expires_at} />
       </>
     );
   }
@@ -296,8 +305,9 @@ export const Account: React.FC<AccountProps> = ({
 
   return (
     <div
-      className={classNames('account', {
+      className={classNames('account', className, {
         'account--minimal': minimal,
+        'account--without-border': !withBorder,
       })}
     >
       <div
@@ -307,14 +317,20 @@ export const Account: React.FC<AccountProps> = ({
       >
         <div className='account__info-wrapper'>
           <Permalink
-            className='account__display-name'
+            className='account__display-name focusable'
             title={account?.acct}
             href={account?.url}
             to={`/@${account?.acct}`}
             data-hover-card-account={id}
           >
             <div className='account__avatar-wrapper'>
-              {account ? statusAvatar : <Skeleton width={size} height={size} />}
+              <AnimateEmojiProvider>
+                {account ? (
+                  statusAvatar
+                ) : (
+                  <Skeleton width={size} height={size} />
+                )}
+              </AnimateEmojiProvider>
             </div>
 
             <div className='account__contents'>
@@ -354,6 +370,8 @@ export const Account: React.FC<AccountProps> = ({
                 />
               </div>
             ))}
+
+          {extraAccountInfo}
         </div>
 
         {!minimal && (
@@ -362,6 +380,8 @@ export const Account: React.FC<AccountProps> = ({
             {button}
           </div>
         )}
+
+        {children}
       </div>
     </div>
   );

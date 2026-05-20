@@ -1,4 +1,5 @@
-import { Emoji } from 'flavours/glitch/components/status_reactions';
+import { Emoji } from 'flavours/glitch/components/emoji';
+import { isUnicodeEmoji } from 'flavours/glitch/features/emoji/utils';
 import { useHovering } from 'flavours/glitch/hooks/useHovering';
 import { autoPlayGif } from 'flavours/glitch/initial_state';
 import type { Account } from 'flavours/glitch/models/account';
@@ -12,6 +13,14 @@ interface Props {
   baseSize?: number;
   overlaySize?: number;
 }
+
+const handleImgLoadError = (error: { currentTarget: HTMLElement }) => {
+  //
+  // When the img tag fails to load the image, set the img tag to display: none. This prevents the
+  // alt-text from overrunning the containing div.
+  //
+  error.currentTarget.style.display = 'none';
+};
 
 export const AvatarOverlay: React.FC<Props> = ({
   account,
@@ -38,20 +47,31 @@ export const AvatarOverlay: React.FC<Props> = ({
         style={{ width: `${overlaySize}px`, height: `${overlaySize}px` }}
         data-avatar-of={`@${friend?.get('acct')}`}
       >
-        {friendSrc && <img src={friendSrc} alt={friend?.get('acct')} />}
-      </div>
-    );
-  } else {
-    overlayElement = (
-      <div className='account__emoji' data-emoji-name={emoji?.name}>
-        {emoji && (
-          <Emoji
-            emoji={emoji.name}
-            hovered={hovering}
-            url={emoji.url}
-            staticUrl={emoji.static_url}
+        {friendSrc && (
+          <img
+            src={friendSrc}
+            alt={friend?.get('acct')}
+            onError={handleImgLoadError}
           />
         )}
+      </div>
+    );
+  } else if (emoji) {
+    const code = isUnicodeEmoji(emoji.name) ? emoji.name : `:${emoji.name}:`;
+    let custom;
+    if (emoji.url) {
+      custom = {
+        [emoji.name]: {
+          shortcode: emoji.name,
+          static_url: emoji.static_url,
+          url: emoji.url,
+        },
+      };
+    }
+
+    overlayElement = (
+      <div className='account__emoji' data-emoji-name={emoji.name}>
+        <Emoji code={code} customEmoji={custom} />
       </div>
     );
   }
@@ -69,7 +89,13 @@ export const AvatarOverlay: React.FC<Props> = ({
           style={{ width: `${baseSize}px`, height: `${baseSize}px` }}
           data-avatar-of={`@${account?.get('acct')}`}
         >
-          {accountSrc && <img src={accountSrc} alt={account?.get('acct')} />}
+          {accountSrc && (
+            <img
+              src={accountSrc}
+              alt={account?.get('acct')}
+              onError={handleImgLoadError}
+            />
+          )}
         </div>
       </div>
       <div className='account__avatar-overlay-overlay'>{overlayElement}</div>

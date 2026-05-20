@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { PureComponent } from 'react';
 
-import { Helmet } from 'react-helmet';
+import { Helmet } from '@unhead/react/helmet';
 
 import Base from 'flavours/glitch/components/modal_root';
 import { AltTextModal } from 'flavours/glitch/features/alt_text_modal';
@@ -11,6 +11,7 @@ import {
   BlockModal,
   DomainBlockModal,
   ReportModal,
+  ReportCollectionModal,
   SettingsModal,
   EmbedModal,
   ListAdder,
@@ -83,6 +84,10 @@ export const MODAL_COMPONENTS = {
   'BLOCK': BlockModal,
   'DOMAIN_BLOCK': DomainBlockModal,
   'REPORT': ReportModal,
+  'REPORT_COLLECTION': ReportCollectionModal,
+  'COLLECTION_ADDER': () => import('@/flavours/glitch/features/collection_adder').then(module => ({ default: module.CollectionAdder })),
+  'SHARE_COLLECTION': () => import('@/flavours/glitch/features/collections/components/share_modal').then(module => ({ default: module.CollectionShareModal })),
+  'REVOKE_COLLECTION_INCLUSION': () => import('@/flavours/glitch/features/collections/detail/revoke_collection_inclusion_modal').then(module => ({ default: module.RevokeCollectionInclusionModal })),
   'SETTINGS': SettingsModal,
   'DEPRECATED_SETTINGS': () => Promise.resolve({ default: DeprecatedSettingsModal }),
   'ACTIONS': () => Promise.resolve({ default: ActionsModal }),
@@ -98,7 +103,25 @@ export const MODAL_COMPONENTS = {
   'ANNUAL_REPORT': AnnualReportModal,
   'COMPOSE_PRIVACY': () => Promise.resolve({ default: VisibilityModal }),
   'ACCOUNT_NOTE': () => import('@/flavours/glitch/features/account_timeline/modals/note_modal').then(module => ({ default: module.AccountNoteModal })),
+  'ACCOUNT_FIELD_OVERFLOW': () => import('@/flavours/glitch/features/account_timeline/modals/field_modal').then(module => ({ default: module.AccountFieldModal })),
+  'ACCOUNT_JOIN_DATE': () => import('@/flavours/glitch/features/account_timeline/modals/join_modal').then(module => ({ default: module.AccountJoinModal })),
+  'ACCOUNT_EDIT_NAME': accountEditModal('NameModal'),
+  'ACCOUNT_EDIT_BIO': accountEditModal('BioModal'),
+  'ACCOUNT_EDIT_PROFILE_DISPLAY': accountEditModal('ProfileDisplayModal'),
+  'ACCOUNT_EDIT_VERIFY_LINKS': accountEditModal('VerifiedModal'),
+  'ACCOUNT_EDIT_FIELD_EDIT': accountEditModal('EditFieldModal'),
+  'ACCOUNT_EDIT_FIELD_DELETE': accountEditModal('DeleteFieldModal'),
+  'ACCOUNT_EDIT_FIELDS_REORDER': accountEditModal('ReorderFieldsModal'),
+  'ACCOUNT_EDIT_IMAGE_ALT': accountEditModal('ImageAltModal'),
+  'ACCOUNT_EDIT_IMAGE_DELETE': accountEditModal('ImageDeleteModal'),
+  'ACCOUNT_EDIT_IMAGE_UPLOAD': accountEditModal('ImageUploadModal'),
+  'ACCOUNT_HIDE_FEATURED_TAB': () => import('@/flavours/glitch/features/ui/components/confirmation_modals/hide_featured_tab').then(module => ({ default: module.ConfirmHideFeaturedTabModal })),
 };
+
+/** @arg {keyof import('@/flavours/glitch/features/account_edit/modals')} type */
+function accountEditModal(type) {
+  return () => import('@/flavours/glitch/features/account_edit/modals').then(module => ({ default: module[type] }));
+}
 
 export default class ModalRoot extends PureComponent {
 
