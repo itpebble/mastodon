@@ -1,0 +1,139 @@
+:root {
+  // Base color variable overrides
+  --color-grey-950: #0b0b0a;
+	--color-grey-600:  #1c1c18;
+	--color-grey-500: #323426;
+	--color-grey-400: #626652;
+	--color-grey-100: #7b8460;
+  --color-red-600: #b7253d;
+	--color-red-500: #df405a;
+	--color-red-400: #d06868;
+  --color-yellow-700: #ca8f04;
+	--color-yellow-400: #ffc90e;
+  --color-green-400: #79bd9a;
+	--color-indigo-600: #303820;
+	--color-indigo-500: #38520d;
+	--color-indigo-400: #7a9a10;
+	--color-indigo-300: #b7e410;
+	--color-indigo-200: #f8ff7c;
+	--color-indigo-50: #faffed; 
+  // Custom color variables
+	--color-cafe-600: #262621;
+	--color-cafe-500: #393b2d;
+	--color-cafe-300: #9bbd1e;
+	--color-cafe-200: #e4ffa8;
+  // colour fixes
+  --color-bg-brand-base: #9bbd1e;
+  --color-bg-secondary: #262621;
+  --color-bg-tertiary: #393b2d;
+  --scroll-button-bg: #657a1a;
+  --color-bg-brand-softest: var(--color-grey-500);
+  --color-bg-brand-base-hover: var(--color-indigo-500);
+  --color-border-primary: var(--border-color);
+  
+  
+  /* 
+  Color overrides for UI elements are below
+  */
+
+  // Background colors
+	--color-bg-primary: var(--color-cafe-500);
+	--color-bg-elevated: var(--color-cafe-600);
+  --background-color-tint: var(--color-bg-tertiary); // Annoyingly, this token is not fully deprecated yet: it is still used on the about page
+	--color-bg-inverted: var(--color-cafe-200);
+	--color-bg-media-base: var(--color-grey-950);
+    --color-bg-media: var(--color-grey-950);
+	--color-bg-media-strength: 75%;
+  // Text colors
+	--color-text-primary: var(--color-indigo-50);
+	--color-text-secondary: var(--color-cafe-300);
+	--color-text-tertiary: var(--color-cafe-200);
+	--color-text-on-inverted: var(--color-grey-950);
+  // Misc. UI element adjustments
+	--border-color: rgba(172, 200, 121, .2);
+	--elevated-color: rgba(182, 200, 151, .1);
+	--elevated-tint: rgba(227, 240, 199, .07);
+	--hover-color: rgba(181, 189, 111, .07);
+	--overlay-strength-success: 10%;
+	// These specifically affect the colors for code blocks and block quotes
+	--rich-text-container-color: var(--color-bg-brand-softer);
+	--rich-text-text-color: var(--color-bg-brand-base);
+	--rich-text-decorations-color: var(--color-bg-brand-base-hover);
+	// Make shadows a bit less intense and adjust their color
+	--shadow-strength-primary: 10%;
+	--color-shadow-primary: rgb(from var(--color-grey-950) r g b/var(--shadow-strength-primary));
+}
+
+// The hashtag bar color doesn't use color variables for whatever reason, so override it here
+.hashtag-bar a,
+.hashtag-bar button {
+  color: var(--color-indigo-400) !important;
+}
+
+// The padding in the about section bodies are set to 0 by default, and it looks ugly
+.about__section__body {
+  padding: 2% !important;
+}
+
+// This prevents the about section title boxes from shifting around when you expand them
+// It also keeps them as rounded-edge rectangles intead of transforming into a sharp-edge rectangle
+.about__section.active .about__section__title {
+  margin-inline: unset !important;
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--color-border-primary) !important;
+}
+    
+// Scrollbar color mod
+    body {
+        scrollbar-color: var(--color-grey-600) var(--color-grey-950);
+    }
+    
+// recolors 
+    
+    .notification-group--favourite > .notification-group__icon::before {
+        background-color: var(--color-cafe-300) !important;
+    }
+    
+    .button {
+        background-color:var(--color-cafe-300) !important;
+    }
+    
+    .button:hover {
+        background-color:var(--color-indigo-400) !important;
+    }
+    
+    .hashtag-bar a {
+        background-color:var(--color-indigo-600) !important;
+        color:var(--color-indigo-300) !important;
+    }
+    
+    .hashtag-bar a:hover {
+        background-color:var(--color-indigo-500) !important;
+        color:var(--color-indigo-200) !important;
+    }
+    
+    .notification-group__main__status {
+        background:var(--color-grey-500) !important;
+        border:none;
+    }
+    
+    .content-warning {
+        background:var(--color-grey-500) !important;
+        border:1px solid var(--color-grey-100);
+    }
+    
+    .column-header__wrapper.active::before {
+  background:radial-gradient(ellipse,var(--color-indigo-400), transparent 60%);
+}
+    
+    .media-gallery__alt__label, .relationship-tag {
+        background:var(--color-bg-media-base) !important;
+    }
+    
+    .item-list > article > div::after, :not(.radio-button__input):not(span) {
+        border-color:var(--border-color) !important;
+    }
+    
+    .reactions-bar__item { 
+        background:var(--color-bg-brand-softest) !important;
+    }
