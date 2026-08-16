@@ -1,4 +1,4 @@
-:root {
+:root, [data-color-scheme="light"] {
   // Base color variable overrides
   --color-grey-950: #0b0b0a;
 	--color-grey-600:  #1c1c18;
@@ -8,9 +8,11 @@
   --color-red-600: #b7253d;
 	--color-red-500: #df405a;
 	--color-red-400: #d06868;
+	--color-red-300: #ed9889;
   --color-yellow-700: #ca8f04;
 	--color-yellow-400: #ffc90e;
   --color-green-400: #79bd9a;
+  --color-indigo-700: #b7e410; //light theme fix
 	--color-indigo-600: #303820;
 	--color-indigo-500: #38520d;
 	--color-indigo-400: #7a9a10;
@@ -30,6 +32,7 @@
   --color-bg-brand-softest: var(--color-grey-500);
   --color-bg-brand-base-hover: var(--color-indigo-500);
   --color-border-primary: var(--border-color);
+  --color-text-favourite-highlight: #ec6a13;
   
   
   /* 
@@ -96,11 +99,24 @@
     
     .button {
         background-color:var(--color-cafe-300) !important;
+		color: var(--color-bg-secondary);
+    }
+
+	.button, .button.button-secondary, .btn, .simple_form .btn {
+		color: var(--color-bg-secondary);
     }
     
     .button:hover {
         background-color:var(--color-indigo-400) !important;
     }
+
+	.compose-form__actions .button::before {
+		color: var(--color-bg-secondary) !important;
+	}
+	
+	.button--destructive:hover {
+		color: var(--color-red-600) !important;
+	}
     
     .hashtag-bar a {
         background-color:var(--color-indigo-600) !important;
@@ -137,3 +153,7 @@
     .reactions-bar__item { 
         background:var(--color-bg-brand-softest) !important;
     }
+
+
+	
+
