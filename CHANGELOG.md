@@ -2,7 +2,77 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.7.0] - UNRELEASED
+## [4.7.3] - 2026-10-01
+
+### Security
+
+- Update dependencies
+
+### Added
+
+- Add logging of account data removal (#40572 by @ClearlyClaire)
+- Add link to homepage to 404 error page (#40369 by @diondiondion)
+
+### Changed
+
+- Change account self-deletion page to always ask to confirm username (#40576 and #40733 by @ClearlyClaire)
+
+### Fixed
+
+- Fix error handling for malformed webfinger subjects (#40731 by @ClearlyClaire)
+- Fix threads leak by updating dependency aws-sdk-s3
+- Fix occasional installation-time error by updating dependency yarn to v4.18.1 (#40722 by @renovate[bot])
+- Fix inconsistent horizontal page padding between profile and profile editor (#40700 by @diondiondion)
+- Fix server error on registration for wrong DOB (#40607 by @sudeeptarlekar)
+- Fix quotes disclaimer disappearing on posts with no quote (#40587 by @crafkaz)
+- Fix `POST /api/v1/accounts` still being accessible when `SSO_ACCOUNT_SIGN_UP` is set (#40681 by @ClearlyClaire)
+- Fix reported statuses not being deleted after account deletion (#40650 by @ClearlyClaire)
+- Fix mobile navigation covering up "Next step" button during onboarding (#40634 by @diondiondion)
+- Fix rate limits not normalizing submitted e-mail addresses (#40658 by @Gargron)
+- Fix moderators being able to issue a warning on moderators of higher position (#40646 by @ClearlyClaire)
+- Fix deleted-because-of-suspension accounts being marked as manually deleted (#40645 by @ClearlyClaire)
+- Fix description text overflowing on Overview landing page (#40272 by @diondiondion)
+- Fix account avatar and header descriptions not being deleted when an account is deleted (#40621 by @ClearlyClaire)
+- Fix deleted accounts not being removed from featured collections (#40623 by @ClearlyClaire)
+- Fix `PreviewCardsStatus` records not being deleted on account deletion (#40624 by @ClearlyClaire)
+- Fix z-index of PIP video player to be above the side panel (#40484 by @tribela)
+- Fix replies order (#40481 by @OmmyZhang)
+- Fix missing confirmation when leaving with an unsent post (#40478 by @crafkaz)
+- Fix email footer spacing around custom footer text (#40440 by @mjankowski)
+
+## [4.7.2] - 2026-09-15
+
+### Security
+
+- Temporarily disable HEIF support
+
+### Fixes
+
+- Fix relative privacy policy links in subscription emails (#40486 by @crafkaz)
+- Fix canonical email blocks interfering with freezing or approving users (#40463 by @ClearlyClaire)
+- Fix 500 error when trying to upload a non-custom-filter JSON import (#40449 and #40451 by @ClearlyClaire)
+- Fix 500 error when submitting a status twice (#40439 by @ClearlyClaire)
+- Fix self-deleted accounts not being un-deleted when using `tootctl accounts create --reattach` (#40430 by @mjankowski)
+- Fix account deletion not deleting generated annual reports (#40394 by @ClearlyClaire)
+- Fix notifications not being cleaned up when notification requests are deleted in bulk (#40393 by @ClearlyClaire)
+
+## [4.7.1] - 2026-09-01
+
+### Security
+
+- Fix password authentication bypass in 2FA auth for LDAP/PAM/SSO accounts ([GHSA-vx32-x96w-qq65](https://github.com/mastodon/mastodon/security/advisories/GHSA-vx32-x96w-qq65))
+- Fix Denial of Service when processing pathological JSON-LD activities ([GHSA-vgm8-frgh-rh2v](https://github.com/mastodon/mastodon/security/advisories/GHSA-vgm8-frgh-rh2v))
+- Fix disabled staff accounts still having access to admin API ([GHSA-62j4-hvj7-px3f](https://github.com/mastodon/mastodon/security/advisories/GHSA-62j4-hvj7-px3f))
+
+### Fixes
+
+- Fix invited-without-approval-bypass not being asked for a textual reason (#40332 by @ClearlyClaire)
+- Fix email blocks domain filter not being kept through pagination (#40254 by @ClearlyClaire)
+- Fix `config/` directory missing from Bootsnap precompilation options in Dockerfile (#40255 by @ClearlyClaire)
+- Fix some of 4.7 migrations not re-running cleanly when interrupted (#40264 by @ClearlyClaire)
+- Fix account creation failing on `ActiveRecord::Encryption` configuration in `mastodon:setup` rake task (#40275 by @ClearlyClaire)
+
+## [4.7.0] - 2026-08-20
 
 ### Added
 
@@ -27,7 +97,7 @@ All notable changes to this project will be documented in this file.
     is an account for which the handle cannot be currently verified, but is otherwise valid.
     In the REST API, they have their `username` and `domain` attribute overridden and this is made explicit through the [`invalid_handle` attribute](https://docs.joinmastodon.org/entities/Account/#invalid_handle).
 - Add outgoing RFC9421 HTTP Message Signatures as fallback to earlier draft (#39756 by @ClearlyClaire)
-- Change how local users' keypairs are stored (#39658, #39668, #39662, #39684, #39686 and #39690 by @ClearlyClaire)
+- Change how local users' keypairs are stored (#39658, #39668, #39662, #39684, #39686, #39690 and #40138 by @ClearlyClaire)
   - This moves local users' keypairs to the dedicated table that was created in 4.6.
   - Private keys are now encrypted at rest, and the new infrastructure will allow for key rotation in the future.
 - Add support for `expires` in Linked Data Signatures and Object Integrity Proofs (#39701 by @ClearlyClaire)
@@ -39,6 +109,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Fix autosuggestions overstaying their welcome in languages that don't use spaces (#40217 by @Gargron)
+- Fix error when processing remote actors with `null` public keys (#40194 by @ClearlyClaire)
+- Fix various off-by-one errors in statistics time ranges (#40193 by @ClearlyClaire)
+- Fix `/deck` being removed from path when resizing window (#40180 by @ClearlyClaire)
+- Fix error in `tootctl media refresh` when cleaning some incompletely processed files (#40056 by @shleeable)
+- Fix plain-text formatter not treating `<BR>` as newline (#40079 by @shleeable)
 - Fix performance of listing follow requests by adding appropriate index (#40033 by @ClearlyClaire)
 - Fix missing `on_delete: :cascade` on `GeneratedAnnualReport` foreign key (#40063 by @ClearlyClaire)
 - Fix `DeleteAccountService#purge_favourites!` only invalidating deprecated cache keys (#40048 by @shleeable)
@@ -68,6 +144,23 @@ All notable changes to this project will be documented in this file.
 - Remove support for `Reject` and `Accept` of `QuoteRequest` that cannot be found by `id` (#39833 by @ClearlyClaire)
 - Remove deprecated `bin/update` script (#39443 by @mjankowski)
 - Remove support for pre-Mastodon 4.3.0 cookies (#38918 by @ClearlyClaire)
+
+## [4.6.6] - 2026-08-13
+
+### Changes
+
+- Change `mastodon:setup` task warning about trademark to match `masto` but ignore subdomains (#40143 by @ClearlyClaire)
+
+### Fixed
+
+- Fix connection errors when processing `fediverse:creator` preventing creation of preview cards (#40135 by @ClearlyClaire)
+- Fix Web UI being inaccessible with URLs ending with `.zip` (#40134 by @ClearlyClaire)
+- Fix semitransparent background of picture-in-picture video player (#40132 by @diondiondion)
+- Fix title tooltip appearing for fullscreen videos (#40127 by @diondiondion)
+- Fix image preview too dark in alt text editor dialog (#40126 by @diondiondion)
+- Fix domain block impact queries being rejected (#40122 by @ClearlyClaire)
+- Fix mobile navigation scrolling to top while opening (#40042 by @sharlayan)
+- Fix selected account being lost when creating a collection (#39897 and #40133 by @diondiondion and @sharlayan)
 
 ## [4.6.5] - 2026-08-06
 
