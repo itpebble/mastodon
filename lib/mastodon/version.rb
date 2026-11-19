@@ -5,11 +5,11 @@ module Mastodon
     module_function
 
     def major
-      4
+      5
     end
 
     def minor
-      8
+      0
     end
 
     def patch
